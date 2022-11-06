@@ -17,6 +17,7 @@ float sizeDiff = 0.15;
 float rotationGradient;
 PImage img;
 boolean isDecreasing = false;
+boolean canShow = true;
 
 void setup() {
   size(1400, 800, P2D);
@@ -96,21 +97,34 @@ void draw() {
 }
 
 void midiMessage(MidiMessage message, long timestamp, String bus_name) { 
-  int note = (int)(message.getMessage()[0] & 0xFF) ;
-   if (starsCount.size() > 0) {
-      int randomStarIndex = (int) random(starSPList.size());
-      StarSP currentStar = starSPList.get(randomStarIndex);
+  if(message.getLength() < 2) {
+    return;
+  }
+  canShow = !canShow;
+  int note = (int)(message.getMessage()[1] & 0xFF);
+  int velocity = (int)(message.getMessage()[2] & 0xFF) ;
+   if (starsCount.size() > 0 && canShow) {
+     int randomStarIndex = (int) random(starsCount.size());
+      int randomStarCount = starsCount.get(randomStarIndex);
+      StarSP currentStar = starSPList.get(randomStarCount);
+      currentStar.x = random(width);
+      currentStar.y = 80;
       currentStar.canShow = true;
+      starsCount.remove(randomStarIndex);
       return;
     }
   println("Bus " + bus_name + ": Note "+ note);
 }
 
 void mouseClicked() {
-   if (starsCount.size() > 0) {
-      int randomStarIndex = (int) random(starSPList.size());
-      StarSP currentStar = starSPList.get(randomStarIndex);
+   if (starsCount.size() > 0 && canShow) {
+      int randomStarIndex = (int) random(starsCount.size());
+      int randomStarCount = starsCount.get(randomStarIndex);
+      StarSP currentStar = starSPList.get(randomStarCount);
+      currentStar.x = random(width);
+      currentStar.y = 80;
       currentStar.canShow = true;
+      starsCount.remove(randomStarIndex);
       return;
     }
 }
